@@ -37,7 +37,7 @@ def create_template():
         "to_email": "{{rcpt_email}}",
         "from_name": "{{sender_name}}",
         "from_email": "{{sender_email}}",
-        "return_path": "{{return_path}}",
+        "return_path": "bounces@bounces.example.com",
         "options": {
             "track_clicks": True
         },

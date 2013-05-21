@@ -37,7 +37,6 @@ def send_email():
         'rcpt_email': 'tim@example.com',
         'sender_name': 'Bob',
         'sender_email': 'bob@example.com',
-        'return_path': 'noreply@example.com',
         'plaintext_body': 'Plain text body',
         'some_key': 'some text value'
     }

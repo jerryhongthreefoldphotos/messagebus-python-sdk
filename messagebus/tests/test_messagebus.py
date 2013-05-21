@@ -428,8 +428,8 @@ class MBTemplatesClientTests(unittest.TestCase):
     def test_version(self):
         mb = MessageBusTemplatesClient(self.api_key)
         result = mb.api_version()
-        # Templates version is of the form 1.13.x
-        self.assertEquals(len(result['version'].split('.')), 3)
+        # Templates version is of the form major.minor.path.build
+        self.assertEquals(len(result['version'].split('.')), 4)
 
     def test_create_template(self):
         template = {
