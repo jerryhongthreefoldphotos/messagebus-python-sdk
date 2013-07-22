@@ -1,4 +1,4 @@
-![MB icon](https://www.messagebus.com/wp-content/themes/msg/images/Message-Bus_LOGO.png)
+![MB icon](https://www.messagebus.com/img/logo.png)
 
 ###Message Bus Python sdk
 
