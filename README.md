@@ -2,7 +2,7 @@
 
 ###Message Bus Python SDK
 
-Message Bus is a cloud-based platform for easily sending email at scale and with complete insight into your messaging traffic and how recipients are responding to it. All platform functions are available via [REST API](http://www.messagebus.com/documentation) as well as the language-specific documentation, sample code, libraries, and/or compiled binaries contained in this SDK.
+Message Bus is a cloud-based platform for easily sending email at scale and with complete insight into your messaging traffic and how recipients are responding to it. All platform functions are available via [REST API](http://docs.messagebusv5.apiary.io/) as well as the language-specific documentation, sample code, libraries, and/or compiled binaries contained in this SDK.
 
 Samples include how to:
 
