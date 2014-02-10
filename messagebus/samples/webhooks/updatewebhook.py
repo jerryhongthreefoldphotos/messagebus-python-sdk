@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-  Copyright 2013 Mail Bypass, Inc.
+  Copyright 2014 Message Bus
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -19,30 +19,39 @@
 import sys
 import os
 
-path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 if not path in sys.path:
     sys.path.insert(1, path)
 del path
 
-from messagebus import MessageBusFeedbackClient, MessageBusResponseError
+from messagebus import MessageBusWebhooksClient, MessageBusResponseError
+
 
 api_key = '7215ee9c7d9dc229d2921a40e899ec5f'
-uri = 'api-v4.messagebus.com'
+webhook_key = '2ff80e9159b517704ce43f0f74e6e247'
 
-channel = 'c1ad3825299f4fa30ff0e4f713bc2726'
-session = '4fcfa8b403ba5986200a2def578b442f'
-scope = 'unsubs|complaints'
+def update_webhook():
+    webhook_config = dict(enabled=True)
 
-
-def get_feedback():
     try:
-        feedback_client = MessageBusFeedbackClient(api_key, uri=uri)
-        results = feedback_client.get_feedback(channel=channel, session=session, scope=scope)
+        webhook_client = MessageBusWebhooksClient(api_key)
+        result = webhook_client.update_webhook(webhook_key, webhook_config)
+    except MessageBusResponseError, error:
+        raise error
+    else:
+        print result
+
+
+def get_webhook():
+    try:
+        webhooks_client = MessageBusWebhooksClient(api_key)
+        result = webhooks_client.get_webhook(webhook_key)
     except MessageBusResponseError, error:
         print error.message
     else:
-        print results
-
+        print result
 
 if __name__ == '__main__':
-    get_feedback()
+    update_webhook()
+    get_webhooks()

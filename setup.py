@@ -1,7 +1,7 @@
 #!/usr/bin/env python                                                                                                                                        
 
 """
-  Copyright 2013 Mail Bypass, Inc.
+  Copyright 2014 Message Bus
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -20,14 +20,14 @@ import setuptools
 
 setuptools.setup(
     name='messagebus',
-    version='4.1.0',
+    version='5.0.0',
     author='Message Bus',
     author_email='support@messagebus.com',
     packages=['messagebus'],
     scripts=[],
     url='http://github.com/messagebus/messagebus-python-sdk',
     license='Apache',
-    description='Message Bus Python sdk.',
+    description='Message Bus Python SDK',
     long_description=open('README.md').read(),
     tests_require=["mox", "pylint"],
     test_suite="messagebus.tests",

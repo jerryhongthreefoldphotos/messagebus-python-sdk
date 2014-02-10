@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-  Copyright 2013 Mail Bypass, Inc.
+  Copyright 2014 Message Bus
 
   Licensed under the Apache License, Version 2.0 (the 'License'); you may
   not use this file except in compliance the License. You may obtain
@@ -22,7 +22,6 @@ from httplib import HTTPSConnection
 import sys
 import os
 import datetime
-import urllib
 import json
 
 import mox
@@ -34,11 +33,12 @@ if not path in sys.path:
     sys.path.insert(1, path)
 del path
 
-from messagebus import MessageBusTemplatesClient, MessageBusResponseError, MessageBusAPIClient, MessageBusStatsClient, constants
+from messagebus import MessageBusTemplatesClient, MessageBusResponseError, MessageBusAPIClient, constants
 import messagebus
 
 
 class MockResponse:
+
     def __init__(self, status, body):
         self.status = status
         self.body = body
@@ -78,15 +78,16 @@ class MBAPIClientTests(unittest.TestCase):
 
     def test_version(self):
         expected_resp = json.dumps({
-                                       u'APIName': u'api',
-                                       u'APIVersion': u'1.1.12.0-beta-201210081020',
-                                       u'status_code': 200,
-                                       u'status_message': u'API Version Lookup',
-                                       u'status_time': u'2010-10-22T17:42:59.556Z'}, sort_keys=True)
+                                   u'APIName': u'api',
+                                   u'APIVersion': u'1.1.12.0-beta-201210081020',
+                                   u'status_code': 200,
+                                   u'status_message': u'API Version Lookup',
+                                   u'status_time': u'2010-10-22T17:42:59.556Z'}, sort_keys=True)
 
         mb = MessageBusAPIClient(self.api_key)
-        mb.__dict__['_MessageBusBase__connection'] = self._setup_mock_connection('GET', '/api/version', '', 200,
-                                                                                 expected_resp)
+        mb.__dict__[
+            '_MessageBusBase__connection'] = self._setup_mock_connection('GET', '/version', '', 200,
+                                                                         expected_resp)
 
         received_resp = json.dumps(mb.api_version(), sort_keys=True)
         self._validate_results(expected_resp, received_resp)
@@ -114,30 +115,34 @@ class MBAPIClientTests(unittest.TestCase):
     def test_unauthorized_403(self):
         mb = MessageBusAPIClient(self.api_key)
         self.assertRaises(MessageBusResponseError, mb.send_messages, [])
-        self.assertRaises(MessageBusResponseError, mb.create_session, 'channel', 'session')
-        self.assertRaises(MessageBusResponseError, mb.rename_session, 'channel', 'session', 'newname')
-        self.assertRaises(MessageBusResponseError, mb.get_channel_config, 'channel')
-        self.assertRaises(MessageBusResponseError, mb.get_channel_sessions, 'channel')
+        self.assertRaises(
+            MessageBusResponseError, mb.create_session, 'channel', 'session')
+        self.assertRaises(
+            MessageBusResponseError, mb.rename_session, 'channel', 'session', 'newname')
+        self.assertRaises(
+            MessageBusResponseError, mb.get_channel_config, 'channel')
+        self.assertRaises(
+            MessageBusResponseError, mb.get_channel_sessions, 'channel')
 
     def test_underscorify(self):
         input_camel = json.dumps({
-                                     u'stats': {
-                                         u'msgsAttemptedCount': 0,
-                                         u'openCount': 0,
-                                         u'unsubscribeCount': 0,
-                                         u'complaintCount': 0,
-                                         u'clickCount': 0,
-                                     },
-                                     u'smtp': {
-                                         u'rejectCount': 0,
-                                         u'bounceCount': 0,
-                                         u'acceptCount': 0,
-                                         u'deferralCount': 0,
-                                     },
-                                     u'filter': {u'rcptBadMailboxCount': 0, u'rcptChannelBlockCount': 0},
-                                     u'statusTime': u'2012-09-19T22:40:45.123Z',
-                                     u'statusMessage': u'stats request succeeded',
-                                     u'statusCode': 200,
+                                 u'stats': {
+                                     u'msgsAttemptedCount': 0,
+                                     u'openCount': 0,
+                                     u'unsubscribeCount': 0,
+                                     u'complaintCount': 0,
+                                     u'clickCount': 0,
+                                 },
+                                 u'smtp': {
+                                     u'rejectCount': 0,
+                                     u'bounceCount': 0,
+                                     u'acceptCount': 0,
+                                     u'deferralCount': 0,
+                                 },
+                                 u'filter': {u'rcptBadMailboxCount': 0, u'rcptChannelBlockCount': 0},
+                                 u'statusTime': u'2012-09-19T22:40:45.123Z',
+                                 u'statusMessage': u'stats request succeeded',
+                                 u'statusCode': 200,
                                  }, sort_keys=True)
 
         expected_resp_dict = {
@@ -167,64 +172,6 @@ class MBAPIClientTests(unittest.TestCase):
 
         _, convertedCamel = mb.__underscore_to_camel__(converted_dict)
         self.assertEquals(convertedCamel, input_camel)
-
-    def test_get_stats(self):
-        expected_resp = json.dumps({
-                                       u'stats': {
-                                           u'msgs_attempted_count': 0,
-                                           u'open_count': 0,
-                                           u'unsubscribe_count': 0,
-                                           u'complaint_count': 0,
-                                           u'click_count': 0,
-                                       },
-                                       u'smtp': {
-                                           u'reject_count': 0,
-                                           u'bounce_count': 0,
-                                           u'accept_count': 0,
-                                           u'deferral_count': 0,
-                                       },
-                                       u'filter': {u'rcpt_bad_mailbox_count': 0, u'rcpt_channel_block_count': 0},
-                                       u'status_time': u'2012-09-19T22:40:45.123Z',
-                                       u'status_message': u'stats request succeeded',
-                                       u'status_code': 200,
-                                   }, sort_keys=True)
-
-        mb = MessageBusStatsClient(self.api_key)
-        start_date = datetime.datetime(2012, 10, 10)
-        end_date = datetime.datetime(2012, 10, 15)
-        query_params = urllib.urlencode(
-            {'endDate': end_date.isoformat(), 'startDate': start_date.isoformat()})
-
-        ## stats/email
-        path = '%s?%s' % (constants.end_points['stats'], query_params)
-        mb.__dict__['_MessageBusBase__connection'] = self._setup_mock_connection('GET', path, '', 200, expected_resp)
-        received_resp = json.dumps(mb.get_stats(
-            start_date=start_date, end_date=end_date), sort_keys=True)
-        self._validate_results(expected_resp, received_resp)
-        self.mocker.UnsetStubs()
-
-        channel = 'test_channel'
-        ## stats/email/channel/<channel_uuid>
-        path = '%s?%s' % (constants.end_points['stats_channel'] % {'channel_key': channel}, query_params)
-        mb.__dict__['_MessageBusBase__connection'] = self._setup_mock_connection(
-            'GET', path, '', 200, expected_resp)
-        received_resp = json.dumps(mb.get_stats(start_date=start_date, end_date=end_date, channel='test_channel'),
-                                   sort_keys=True)
-        self._validate_results(expected_resp, received_resp)
-        self.mocker.UnsetStubs()
-
-        ## stats/email/channel/<channel_uuid>/session/<session_uuid>
-        channel = 'test_channel'
-        session = 'test_session'
-        path = '%s?%s' % (
-            constants.end_points['stats_channel_session'] % {'channel_key': channel, 'session_key': session},
-            query_params)
-        mb.__dict__['_MessageBusBase__connection'] = self._setup_mock_connection(
-            'GET', path, '', 200, expected_resp)
-        received_resp = json.dumps(
-            mb.get_stats(start_date=start_date, end_date=end_date, channel=channel, session=session), sort_keys=True)
-        self._validate_results(expected_resp, received_resp)
-        self.mocker.UnsetStubs()
 
     def test_channels(self):
         expected_resp = json.dumps({})
@@ -256,11 +203,11 @@ class MBAPIClientTests(unittest.TestCase):
 
     def test_session_create(self):
         expected_resp = json.dumps({
-                                       u'session_name': u'test session name',
-                                       u'session_key': u'test_session_key',
-                                       u'status_message': u'',
-                                       u'status_time': u'2012-10-31T23:37:44.560Z',
-                                       u'status_code': 202}, sort_keys=True)
+                                   u'session_name': u'test session name',
+                                   u'session_key': u'test_session_key',
+                                   u'status_message': u'',
+                                   u'status_time': u'2012-10-31T23:37:44.560Z',
+                                   u'status_code': 202}, sort_keys=True)
 
         mb = MessageBusAPIClient(self.api_key)
         channel = 'test_channel'
@@ -358,7 +305,8 @@ class MBAPIClientTests(unittest.TestCase):
         # should not raise exception
         received_resp = mb.send_messages([])
 
-        self.assertEqual(json.dumps(received_resp, sort_keys=True), expected_resp_207)
+        self.assertEqual(
+            json.dumps(received_resp, sort_keys=True), expected_resp_207)
         self.mocker.UnsetStubs()
 
         body = json.dumps({'messages': []})
@@ -374,7 +322,8 @@ class MBAPIClientTests(unittest.TestCase):
 
     def test_send_above_buffer_limit(self):
         mb = MessageBusTemplatesClient(self.api_key)
-        self.assertRaises(ValueError, mb.send_messages, 'fake_key', ['msg'] * 101)
+        self.assertRaises(
+            ValueError, mb.send_messages, 'fake_key', ['msg'] * 101)
 
 
 class MBTemplatesClientTests(unittest.TestCase):
@@ -420,7 +369,7 @@ class MBTemplatesClientTests(unittest.TestCase):
 
         mb = MessageBusTemplatesClient(self.api_key)
         mb.__dict__['_MessageBusBase__connection'] = self.__setup_mock_connection__(
-            'GET', '/api/v4/templates/version', '', 200, expected_resp)
+            'GET', '/v5/templates/version', '', 200, expected_resp)
         received_resp = json.dumps(mb.api_version(), sort_keys=True)
         self._validate_results(expected_resp, received_resp)
         self.mocker.UnsetStubs()
@@ -462,24 +411,29 @@ class MBTemplatesClientTests(unittest.TestCase):
 
         mb = MessageBusTemplatesClient(self.api_key)
 
-        expected_resp = json.dumps({"template_key": "0eef707e-f25f-45bd-ae52-35090b69f13b",
-                                    "status_code": 201,
-                                    "status_message": "Template saved",
-                                    "status_time": "2013-02-21T21:27:35.338Z"
-                                   }, sort_keys=True)
+        expected_resp = json.dumps(
+            {"template_key": "0eef707e-f25f-45bd-ae52-35090b69f13b",
+             "status_code": 201,
+             "status_message": "Template saved",
+             "status_time": "2013-02-21T21:27:35.338Z"
+             }, sort_keys=True)
 
-        expect_resp_out = json.dumps({"templateKey": "0eef707e-f25f-45bd-ae52-35090b69f13b",
-                                      "statusCode": 201,
-                                      "statusMessage": "Template saved",
-                                      "statusTime": "2013-02-21T21:27:35.338Z"
-                                     }, sort_keys=True)
+        expect_resp_out = json.dumps(
+            {"templateKey": "0eef707e-f25f-45bd-ae52-35090b69f13b",
+             "statusCode": 201,
+             "statusMessage": "Template saved",
+             "statusTime": "2013-02-21T21:27:35.338Z"
+             }, sort_keys=True)
 
-        mb.__dict__['_MessageBusBase__connection'] = self.__setup_mock_connection__('POST', '/api/v4/templates/',
-                                                                                    json.dumps(template_out,
-                                                                                               sort_keys=True), 201,
-                                                                                    expect_resp_out)
+        mb.__dict__[
+            '_MessageBusBase__connection'] = self.__setup_mock_connection__('POST', '/v5/templates/',
+                                                                                    json.dumps(
+                                                                                        template_out,
+                                                                            sort_keys=True), 201,
+                                                                            expect_resp_out)
 
-        received_resp = json.dumps(mb.create_template(template), sort_keys=True)
+        received_resp = json.dumps(
+            mb.create_template(template), sort_keys=True)
 
         self._validate_results(expected_resp, received_resp)
         self.mocker.UnsetStubs()
@@ -502,11 +456,13 @@ class MBTemplatesClientTests(unittest.TestCase):
 
         mb = MessageBusTemplatesClient(self.api_key)
         expected_resp = json.dumps(
-            dict(template=template, status_code=200, status_message="template", status_time="2013-02-21T21:27:35.338Z"),
+            dict(template=template, status_code=200,
+                 status_message="template", status_time="2013-02-21T21:27:35.338Z"),
             sort_keys=True)
 
-        mb.__dict__['_MessageBusBase__connection'] = self.__setup_mock_connection__('GET', '/api/v4/template/foo_key',
-                                                                                    '', 200, expected_resp)
+        mb.__dict__[
+            '_MessageBusBase__connection'] = self.__setup_mock_connection__('GET', '/v5/template/foo_key',
+                                                                            '', 200, expected_resp)
 
         received_resp = json.dumps(mb.get_template('foo_key'), sort_keys=True)
         self._validate_results(expected_resp, received_resp)
@@ -518,7 +474,8 @@ class MBTemplatesClientTests(unittest.TestCase):
         self.assertRaises(MessageBusResponseError, mb.get_template, 'fake_key')
         self.assertRaises(MessageBusResponseError, mb.get_templates)
         self.assertRaises(MessageBusResponseError, mb.create_template, {})
-        self.assertRaises(MessageBusResponseError, mb.send_messages, 'fake_key', [])
+        self.assertRaises(
+            MessageBusResponseError, mb.send_messages, 'fake_key', [])
 
     def test_send_mock_multiple(self):
         messages = [
@@ -555,28 +512,31 @@ class MBTemplatesClientTests(unittest.TestCase):
         })
 
         expected_resp = json.dumps({
-                                       "failure_count": 0,
-                                       "results": [
-                                           {
-                                               "to_email": "bob@gmail.com",
-                                               "message_id": "8a37a4a07c7011e29a5890b8d09e776a",
-                                               "message_status": 0
-                                           }
-                                       ],
-                                       "status_code": 202,
-                                       "status_message": "",
-                                       "status_time": "2013-02-21T21:49:17.284Z",
-                                       "success_count": 1
+                                   "failure_count": 0,
+                                   "results": [
+                                       {
+                                           "to_email": "bob@gmail.com",
+                                           "message_id": "8a37a4a07c7011e29a5890b8d09e776a",
+                                           "message_status": 0
+                                       }
+                                   ],
+                                   "status_code": 202,
+                                   "status_message": "",
+                                   "status_time": "2013-02-21T21:49:17.284Z",
+                                   "success_count": 1
                                    }, sort_keys=True)
 
-        mb.__dict__['_MessageBusBase__connection'] = self.__setup_mock_connection__('POST',
-                                                                                    '/api/v4/templates/email/send',
-                                                                                    json.dumps(
-                                                                                        dict(templateKey='template_key',
-                                                                                             messages=messages),
-                                                                                        sort_keys=True), 202,
-                                                                                    expected_resp_out)
-        received_resp = json.dumps(mb.send_messages(template='template_key', messages=messages), sort_keys=True)
+        mb.__dict__[
+            '_MessageBusBase__connection'] = self.__setup_mock_connection__('POST',
+                                                                            '/v5/templates/send',
+                                                                            json.dumps(
+                                                                                dict(
+                                                                                    templateKey='template_key',
+                                                                                    messages=messages),
+                                                                                sort_keys=True), 202,
+                                                                            expected_resp_out)
+        received_resp = json.dumps(
+            mb.send_messages(template='template_key', messages=messages), sort_keys=True)
         self._validate_results(expected_resp, received_resp)
 
         self.mocker.UnsetStubs()
@@ -617,16 +577,20 @@ class MBTemplatesClientTests(unittest.TestCase):
                                     "status_message": "",
                                     "status_time": "2013-02-21T21:49:17.284Z",
                                     "success_count": 1
-                                   }, sort_keys=True)
+                                    }, sort_keys=True)
 
-        mb.__dict__['_MessageBusBase__connection'] = self.__setup_mock_connection__('POST',
-                                                                                    '/api/v4/templates/email/send',
-                                                                                    json.dumps(
-                                                                                        dict(templateKey='template_key',
-                                                                                             messages=[message]),
-                                                                                        sort_keys=True), 202,
-                                                                                    expected_resp_out)
-        received_resp = json.dumps(mb.send_messages(template='template_key', messages=[message]), sort_keys=True)
+        mb.__dict__[
+            '_MessageBusBase__connection'] = self.__setup_mock_connection__('POST',
+                                                                            '/v5/templates/send',
+                                                                            json.dumps(
+                                                                                dict(
+                                                                                    templateKey='template_key',
+                                                                                    messages=[
+                                                                                        message]),
+                                                                                sort_keys=True), 202,
+                                                                            expected_resp_out)
+        received_resp = json.dumps(
+            mb.send_messages(template='template_key', messages=[message]), sort_keys=True)
         self._validate_results(expected_resp, received_resp)
 
         self.mocker.UnsetStubs()
@@ -644,21 +608,26 @@ class MBTemplatesClientTests(unittest.TestCase):
             {u'statusCode': 400, u'statusMessage': u'A non 2xx message - test',
              u'statusTime': u'2013-03-02T22:39:03.581Z'})
 
-        mb.__dict__['_MessageBusBase__connection'] = self.__setup_mock_connection__('POST',
-                                                                                    '/api/v4/templates/email/send',
-                                                                                    json.dumps(
-                                                                                        dict(templateKey='template_key',
-                                                                                             messages=[message]),
-                                                                                        sort_keys=True), 202,
-                                                                                    expected_resp_out)
+        mb.__dict__[
+            '_MessageBusBase__connection'] = self.__setup_mock_connection__('POST',
+                                                                            '/v5/templates/send',
+                                                                            json.dumps(
+                                                                                dict(
+                                                                                    templateKey='template_key',
+                                                                                    messages=[
+                                                                                        message]),
+                                                                                sort_keys=True), 202,
+                                                                            expected_resp_out)
 
-        self.assertRaisesWithMessage('Error: status_code:400 , status_message:A non 2xx message - test',
-                                     mb.send_messages, 'template_key', [message])
+        self.assertRaisesWithMessage(
+            'Error: status_code:400 , status_message:A non 2xx message - test',
+            mb.send_messages, 'template_key', [message])
         self.mocker.UnsetStubs()
 
     def test_send_above_buffer_limit(self):
         mb = MessageBusTemplatesClient(self.api_key)
-        self.assertRaises(ValueError, mb.send_messages, 'fake_key', ['msg'] * 100)
+        self.assertRaises(
+            ValueError, mb.send_messages, 'fake_key', ['msg'] * 100)
 
     def test_pylint(self):
         Run(['-E', messagebus.__file__.replace('.pyc', '.py')], exit=False)

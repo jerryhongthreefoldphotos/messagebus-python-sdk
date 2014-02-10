@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-  Copyright 2013 Mail Bypass, Inc.
+  Copyright 2014 Message Bus
  
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -25,9 +25,8 @@ del path
 
 from messagebus import MessageBusAPIClient, MessageBusResponseError
 
-
 api_key = '7215ee9c7d9dc229d2921a40e899ec5f'
-uri = 'api-v4.messagebus.com'
+uri = 'api.messagebus.com'
 
 
 def send_emails():
@@ -39,7 +38,7 @@ def send_emails():
             'from_email': 'noreply@example.com',
             'from_name': 'Example Corporation',
             'subject': 'Single Message Sample for Jane Smith',
-            'custom_headers': {'envelope-sender': 'bounces@bounces.example.com', 'reply-to': 'reply@example.com'},
+            'return_path': 'bounces@bounces.example.com',
             'plaintext_body': 'This message to Jane Smith is a test sent by the Python Message Bus client library.',
             'html_body': '<html><body>This message to Jane Smith is a test sent by the Python Message Bus sdk.</body></html>',
             'session_key': 'DEFAULT',
@@ -51,7 +50,7 @@ def send_emails():
             'from_email': 'noreply@example.com',
             'from_name': 'Example Corporation',
             'subject': 'Single Message Sample for John Doe',
-            'custom_headers': {'envelope-sender': 'bounces@bounces.example.com', 'reply-to': 'reply@example.com'},
+            'return_path': 'bounces@bounces.example.com',
             'plaintext_body': 'This message to John Doe is a test sent by the Python Message Bus client library.',
             'html_body': '<html><body>This message to John Doe is a test sent by the Python Message Bus sdk.</body></html>',
             'session_key': 'DEFAULT',

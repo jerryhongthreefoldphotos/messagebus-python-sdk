@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
   Copyright 2014 Message Bus
- 
+
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
   a copy of the License at
- 
+
       http://www.apache.org/licenses/LICENSE-2.0
- 
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,40 +19,41 @@
 import sys
 import os
 
-path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+path = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 if not path in sys.path:
     sys.path.insert(1, path)
 del path
 
-from messagebus import MessageBusAPIClient, MessageBusResponseError
+from messagebus import MessageBusWebhooksClient, MessageBusResponseError
+
 
 api_key = '7215ee9c7d9dc229d2921a40e899ec5f'
-uri = 'api.messagebus.com'
-channel = 'c485d2ed5cc4ce64fcccca710c7a0bb7'
-session_name = "Test Session Name"
 
 
-def create_session():
+def create_webhook():
+    webhook_config = dict(
+        uri="http://domain.com/events/messagebus/message.accept", enabled=False, event_type="message.accept")
+
     try:
-        api_client = MessageBusAPIClient(api_key, uri=uri)
-        results = api_client.create_session(channel=channel, session_name=session_name)
+        webhook_client = MessageBusWebhooksClient(api_key)
+        results = webhook_client.create_webhook(webhook_config)
     except MessageBusResponseError, error:
         raise error
     else:
-        return results
+        print "Successfully created webhook with key %s" % results['webhook_key']
 
 
-def get_sessions():
+def get_webhooks():
     try:
-        api_client = MessageBusAPIClient(api_key, uri=uri)
-        results = api_client.get_channel_sessions(channel=channel)
+        webhooks_client = MessageBusWebhooksClient(api_key)
+        results = webhooks_client.get_webhooks()
     except MessageBusResponseError, error:
-        raise error
+        print error.message
     else:
-        return results
-
+        for webhook in results['webhooks']:
+            print "Webhook Key: %s" % webhook['webhook_key']
 
 if __name__ == '__main__':
-    print create_session()
-    print get_sessions()
-
+    create_webhook()
+    get_webhooks()

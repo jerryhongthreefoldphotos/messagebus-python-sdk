@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-  Copyright 2013 Mail Bypass, Inc.
+  Copyright 2014 Message Bus
  
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -19,34 +19,33 @@
 
 import sys
 
-version = '4.1.0'
-
+version = '5.0.0'
 max_messages = 100
 max_template_messages = 25
-timeout = 30
+timeout = 300
 debug_level = 0
 reconnect_interval = 60
 
-uri = 'api-v4.messagebus.com'
-template_uri = 'templates-v4-jy01-prod.messagebus.com'
+uri = 'api.messagebus.com'
+template_uri = 'templates.messagebus.com'
 
-user_agent = 'MessageBusAPI:%s-PYTHON:%s' % (version, '.'.join(map(str, sys.version_info[:3])))
+user_agent = 'MessageBusAPI:%s-PYTHON:%s' % (
+    version, '.'.join(map(str, sys.version_info[:3])))
 
 end_points = {
-    'message_emails_send': '/api/v4/message/email/send',
-    'template_emails_send': '/api/v4/templates/email/send',
-    'template': '/api/v4/template/%(template_key)s',
-    'templates': '/api/v4/templates/',
-    'templates_version': '/api/v4/templates/version',
-    'channels': '/api/v4/channels',
-    'channel_config': '/api/v4/channel/%(channel_key)s/config',
-    'channel_sessions': '/api/v4/channel/%(channel_key)s/sessions',
-    'channel_session_rename': '/api/v4/channel/%(channel_key)s/session/%(session_key)s/rename',
-    'version': '/api/version',
-    'feedback': '/api/v4/feedback',
-    'feedback_channel': '/api/v4/feedback/channel/%(channel_key)s',
-    'feedback_channel_session': '/api/v4/feedback/channel/%(channel_key)s/session/%(session_key)s',
-    'stats': '/api/v4/stats/email',
-    'stats_channel': '/api/v4/stats/email/channel/%(channel_key)s',
-    'stats_channel_session': '/api/v4/stats/email/channel/%(channel_key)s/session/%(session_key)s'
+    'message_emails_send': '/v5/messages/send',
+    'template_emails_send': '/v5/templates/send',
+    'template': '/v5/template/%(template_key)s',
+    'templates': '/v5/templates/',
+    'templates_version': '/v5/templates/version',
+    'channels': '/v5/channels',
+    'channel_config': '/v5/channel/%(channel_key)s/config',
+    'channel_sessions': '/v5/channel/%(channel_key)s/sessions',
+    'channel_session_rename': '/v5/channel/%(channel_key)s/session/%(session_key)s/rename',
+    'reports': '/v5/reports',
+    'report': '/v5/report/%(report_key)s',
+    'report_status': '/v5/report/%(report_key)s/status',
+    'version': '/version',
+    'webhooks': '/v5/webhooks',
+    'webhook': '/v5/webhook/%(webhook_key)s'
 }

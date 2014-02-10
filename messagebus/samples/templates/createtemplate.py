@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-  Copyright 2013 Mail Bypass, Inc.
+  Copyright 2014 Message Bus
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -28,7 +28,7 @@ from messagebus import MessageBusTemplatesClient, MessageBusResponseError
 
 
 api_key = '7215ee9c7d9dc229d2921a40e899ec5f'
-uri = 'templates-v4-jy01-prod.messagebus.com'
+uri = 'templates.messagebus.com'
 
 
 def create_template():
@@ -38,9 +38,6 @@ def create_template():
         "from_name": "{{sender_name}}",
         "from_email": "{{sender_email}}",
         "return_path": "bounces@bounces.example.com",
-        "options": {
-            "track_clicks": True
-        },
         "custom_headers": {
             "x-messagebus-sdk": "py"
         },
