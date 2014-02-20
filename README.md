@@ -17,7 +17,7 @@ If you have questions not answered by the samples or the online documentation, p
 
 ####Installing the module
 
-    easy_install messagebus
+    easy_install messagebus-sdk
 
 ####Sending emails
 
