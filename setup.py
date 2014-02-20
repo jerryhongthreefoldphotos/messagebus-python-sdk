@@ -28,7 +28,7 @@ setuptools.setup(
     url='http://github.com/messagebus/messagebus-python-sdk',
     license='Apache',
     description='Message Bus Python SDK',
-    long_description=open('README.md').read(),
+    long_description='Python client for the v5 REST api.',
     tests_require=["mox", "pylint"],
     test_suite="messagebus.tests",
     zip_safe=False)
